@@ -19,3 +19,5 @@ prisma
 
 database/*
 
+book-marketplace/package-lock.json
+book-marketplace/package.json
