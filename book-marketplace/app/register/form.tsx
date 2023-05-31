@@ -68,19 +68,19 @@ export default function Form(){
             "Content-Type": "application/json"
          },
          body: JSON.stringify({
-            username,
-            password,
-            nome,
-            cognome,
-            email,
-            citta
+            username: username.trim(),
+            password: password.trim(),
+            nome: nome.trim(),
+            cognome: cognome.trim(),
+            email: email.trim(),
+            citta: citta.trim()
          })
       })).json();
       
       if (response.status){
          await signIn("credentials", {
-            username,
-            password,
+            username: username.trim(),
+            password: password.trim(),
             callbackUrl: "/",
             redirect: true
          })
@@ -103,7 +103,7 @@ export default function Form(){
             <input type="password" required placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="px-2 py-1 w-full rounded-xl border-2 focus:outline-none border-primary text-black transition-all duration-300 drop-shadow-my"/> 
             <input type="password" required placeholder="Conferma password" value={confermaPassword} onChange={(e) => setConfermaPassword(e.target.value)} className="px-2 py-1 w-full rounded-xl border-2 focus:outline-none border-primary text-black transition-all duration-300 drop-shadow-my"/> 
             <div className="flex items-center gap-2">
-               <input type="checkbox" required checked={checked} onChange={(e) => setChecked(e.target.checked)} className="w-4 h-4 rounded-xl border-4 focus:outline-none border-primary text-black transition-all duration-300 "/>
+               <input type="checkbox" required checked={checked} onChange={(e) => {setChecked(e.target.checked); console.log(checked);}} className="w-4 h-4 rounded-xl  border-4 border-primary text-black transition-all duration-300"/>
                <p className="text-sm font-semibold">Accetto i <a href="#" className="text-primary font-bold">Termini e condizioni</a></p>
             </div>
             <button className=" border-2 px-2 py-1 rounded-xl font-semibold text-shadow bg-primary border-primary text-white transition-all duration-300 hover:bg-white hover:text-primary drop-shadow-my" type="submit">Registrati</button>

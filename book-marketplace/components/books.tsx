@@ -1,4 +1,4 @@
-import { GetBooksFromUsername, GetLastAddedBook } from "@/lib/database";
+import { GetBooksFromUsername, GetLastAddedBook, GetLikedBooksFromUsername } from "@/lib/database";
 import { Book, Response } from "@/typings";
 import Image from "next/image";
 import ClientSideRoute from "./clientsideroute";
@@ -6,6 +6,8 @@ import BookCard from "./bookcard";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { book } from "@prisma/client";
+
+export const revalidate = 1;
 
 /*async function Books({idUser}:{idUser:number}){
    if (idUser) {
@@ -67,17 +69,18 @@ export enum CosaChiedi {
    CercatiRecentemente,
    VicinoATe,
    ITuoiLibri,
-   MessiRecentementeInVendita
+   MessiRecentementeInVendita,
+   MessiLike
 }
 type Props = {
    cosaChiedi: CosaChiedi
 }
 export default async function NuoviBooks({cosaChiedi}:Props){
 
+   const session = await getServerSession(authOptions);
    
    switch (cosaChiedi) {
       case CosaChiedi.ITuoiLibri:
-         const session = await getServerSession(authOptions);
          if (session != undefined) {
             const username = session.user?.name;
             const booksResponse = await GetBooksFromUsername(username!);
@@ -114,6 +117,30 @@ export default async function NuoviBooks({cosaChiedi}:Props){
                </div>
             </div>
          )
+         break;
+      case CosaChiedi.MessiLike:
+         if (session != undefined) {
+            const username = session.user?.name;
+            const booksResponse = await GetLikedBooksFromUsername(username!);
+            
+            if (booksResponse.result.length == 0) {
+               return (<></>)
+            }
+            
+
+            return (
+               <div>
+               <h2 className="font-semibold text-lg">Libri a cui hai messo like</h2>
+               <div className="flex gap-[20px] py-4 overflow-x-auto mx-[-20px] px-[20px]">
+                  {booksResponse.result.map((book:book, index:any) => {
+                     return (
+                        <BookCard book={book} key={index}/>
+                     )
+                  })}
+               </div>
+            </div>
+            )
+         }
          break;
       default:
          return (

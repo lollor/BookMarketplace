@@ -21,7 +21,7 @@ export default function RootLayout({
          <body className="bg-background">
             <Providers>
                <Navbar />
-               <div className="px-[35px] py-3 xl:px-20 lg:py-10">{children}</div>
+               <div className="px-[20px] py-3 xl:px-20 lg:py-10">{children}</div>
             </Providers>
          </body>
       </html>

@@ -5,3 +5,23 @@
 .text-shadow {
   text-shadow: 1px 2px 3px rgba(0,0,0,0.2);
 }
+
+dialog {
+  scale: 0;
+  display: block;
+  transition: all 0.3s;
+}
+
+dialog[open] {
+  scale: 1;
+  border-radius: 12px;
+  outline: none;
+}
+
+dialog::backdrop {
+  @apply bg-primary bg-opacity-20;
+}
+
+* {
+  /*-webkit-appearance: none;*/
+}

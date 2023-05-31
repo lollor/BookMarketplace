@@ -1,4 +1,4 @@
-import { GetBookMetadata } from "@/lib/database";
+import { CreateVisualBook, GetBookMetadata, LikeBook } from "@/lib/database";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { book } from "@prisma/client";
@@ -8,6 +8,10 @@ import { GiPositionMarker } from "react-icons/gi";
 import Image from "next/image";
 import Link from "next/link";
 import Tooltip from "@/components/tooltip";
+import LikeButton from "./likeButton"
+import { cookies } from 'next/headers';
+
+import { revalidatePath } from "next/cache";
 
 export const revalidate = 120;
 
@@ -16,6 +20,7 @@ type Props = {
       id: number
    }
 }
+
 
 export async function generateMetadata( { params }: Props): Promise<Metadata> {
    // read route params
@@ -44,18 +49,48 @@ export default async function Page({ params }: Props) {
       notFound();
    }
 
-   const book = bookResponse.result ;
+   const book = bookResponse.result;
+   const idBook = +params.id
 
    const session = await getServerSession(authOptions)
+
+   async function likeBook(like:boolean) {
+      "use server"
+      
+      const response = await LikeBook(idBook, !like);
+      
+      if (response.status) {
+         revalidatePath("/");
+         revalidatePath("/book/"+params.id);
+      } 
+   }
+
+
 
    const imageUrl = !book.img_id?.startsWith("http") ? `/api/image/${book.img_id!}` : book.img_id;
    let userImageUrl = !book.user.img_id?.startsWith("http") ? `/api/image/${book.user.img_id!}` : book.user.img_id;
    if (userImageUrl === "/api/image/") userImageUrl = "/user.jpg";
    
+   const data = (book.creation_date as Date)
+   let stringaData = "";
+   
+   if (data.getFullYear() != new Date().getFullYear()) {
+      stringaData = (book.creation_date as Date).toLocaleString('it-IT');
+   } else {
+      stringaData = data.getDate() + "/" + (data.getMonth()+1) + ", " + data.toLocaleTimeString('it-IT');
+   }
+
+   const thisBookIsOfTheUser = session?.user?.name === book.user.username;
+
+   const likesBookArray = book.like_book as Array<{user:{username:string}}>
+   const isLiked = likesBookArray.some(like=>like.user.username === session?.user?.name)
+   
+   await CreateVisualBook(idBook);
+
+   
 
    return (
       <div>
-         <p></p>
          <div className="w-full h-[250px]">
             <div className="w-full h-full relative overflow-hidden">
                <Image alt={book.title} style={{objectFit:'contain'}} fill src={imageUrl} />
@@ -64,7 +99,18 @@ export default async function Page({ params }: Props) {
          <h1 className="text-xl text-center my-2 font-semibold">{book.title}</h1>
          <div className="w-full border-t-[1px] border-accent border-opacity-50"></div>
          <div className="flex justify-between items-center my-2">
-            <p className="font-normal text-sm text-slate-500">Pubblicato il {book.creation_date.toLocaleDateString('it-IT')}</p>
+            <div className="flex items-center gap-2 justify-center">
+               <p className="font-normal text-sm text-slate-500 ">{stringaData}</p>
+               <div className="h-[15px] bg-slate-500 w-[1px] bg-opacity-50"></div>
+               {
+                  session ? (
+                     <LikeButton likeBook={likeBook} numberLike={likesBookArray.length} isLiked={isLiked}/>
+                  ) : (
+                     <p className="text-sm text-slate-500 font-light"><Link href={"/login?callbackUrl=/book/"+params.id} className="underline">Loggati</Link> per mettere like</p>
+                  )
+
+               }
+            </div>
             <p className="font-normal text-sm text-slate-500 flex items-center capitalize">
                <GiPositionMarker className="" />{book.user.city}
             </p>
@@ -86,8 +132,15 @@ export default async function Page({ params }: Props) {
                </div>
                <Link href={`/profilo/${book.user.username}`} className="font-semibold underline">{book.user.username}</Link>
             </div>
-            <button className="bg-primary text-white px-2 py-1 rounded-md text-base shadow-md">Contatta il venditore</button>
+            {
+               thisBookIsOfTheUser ? (
+                  <Link href={`/book/${book.id}/edit`} className="bg-primary text-white px-2 py-1 rounded-md text-base shadow-md">Modifica annuncio</Link>
+               ) : (
+                  <button className="bg-primary text-white px-2 py-1 rounded-md text-base shadow-md">Contatta il venditore</button>
+               )
+            }
          </div>
+         <p className="font-light text-slate-500 text-sm py-2">{`Questo annuncio l'ha${book._count.visual_book!=1?"nno":""} visto anche ${book._count.visual_book!=1?"altre":""} ${book._count.visual_book} person${book._count.visual_book==1?"a":"e"}`}</p>
          <div className="w-full border-t-[1px] border-accent border-opacity-50"></div>
          {
             (book.description != null && (book.description as string).trim() != "") ? (

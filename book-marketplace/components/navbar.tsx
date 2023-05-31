@@ -75,12 +75,12 @@ export default function Navbar() {
             </div>
          </div>
          <div className="flex justify-between w-full bg-transparent text-white p-[15px] items-center">
-            <ClientSideRoute route="/">
+            <a href="/">
                <div className="flex items-center gap-[15px]">
                      <div className="rounded-full w-[40px] h-[40px] bg-primary"></div>
                      <h1 className="text-lg font-bold text-colortext drop-shadow-mytext"><span className="text-accent">Book</span>Marketplace</h1>
                </div>
-            </ClientSideRoute>
+            </a>
             <div className="flex flex-col gap-[6px]" onClick={(e)=>toggleNavbarPhone(true)}>
                <div className="h-[6px] w-[30px] rounded-[2px] bg-primary"></div>
                <div className="h-[6px] w-[30px] rounded-[2px] bg-primary"></div>
