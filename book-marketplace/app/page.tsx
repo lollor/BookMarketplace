@@ -4,6 +4,7 @@ import Chats from "@/components/chats";
 import Books, { CosaChiedi } from "@/components/books";
 import Tooltip from "@/components/tooltip";
 import Dialog from "@/components/dialog";
+import { DeleteBook } from "@/lib/database";
 
 export const revalidate = 1;
 
@@ -13,6 +14,9 @@ export const metadata = {
 };
 
 export default async function Page() {
+
+   //await DeleteBook(9)
+
    return (
       <div>
          <Dialog shouldOpenWithTime={false} timeInMs={1000}>
@@ -32,7 +36,7 @@ export default async function Page() {
          {/* <Books titoloDiv="Libri cercati recentemente"/> */}
          <div className="h-[30px]"></div>
          {/* @ts-ignore */}
-         <Chats />
+         {/* <Chats /> */}
          
       </div>
    );

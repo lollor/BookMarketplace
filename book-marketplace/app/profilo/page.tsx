@@ -9,13 +9,15 @@ export const metadata = {
 }
 
 export default async function Page() {
-   const session = await getServerSession(authOptions);
+   /* const session = await getServerSession(authOptions);
    const responseUser = await GetUserByUsername(session?.user?.name!) 
-
    return (
       <div className="overflow-x-auto">
          <pre>{JSON.stringify(session, null, 3)}</pre>
          <pre>{JSON.stringify(responseUser.result, null, 3)}</pre>
       </div>
+   ) */
+   return (
+      <p>Non ancora implementato</p>
    )
 }

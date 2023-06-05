@@ -55,7 +55,8 @@ export default function Navbar() {
          <div className="w-full h-0 fixed z-10 left-0 top-0 bg-primary opacity-[0.97] overflow-x-hidden transition-all duration-300" ref={navbarPhone}>
             <span className="absolute top-[20px] right-[45px] text-white text-[50px]" onClick={(e)=>toggleNavbarPhone(false)}>&times;</span>
             <div className="relative top-1/4 w-full text-center mt-[30px] flex flex-col gap-2 items-center text-white">
-               <Link href={"/"} className="font-semibold text-xl">Come funziona?</Link>
+               <Link href={"/"} className="font-semibold text-xl" onClick={(e)=>toggleNavbarPhone(false)}>Home</Link>
+               <Link href={"/"} className="font-semibold text-xl" onClick={(e)=>toggleNavbarPhone(false)}>Come funziona?</Link>
                {
                   session ? 
                   <>
@@ -75,12 +76,12 @@ export default function Navbar() {
             </div>
          </div>
          <div className="flex justify-between w-full bg-transparent text-white p-[15px] items-center">
-            <a href="/">
+            <ClientSideRoute route="/">
                <div className="flex items-center gap-[15px]">
                      <div className="rounded-full w-[40px] h-[40px] bg-primary"></div>
                      <h1 className="text-lg font-bold text-colortext drop-shadow-mytext"><span className="text-accent">Book</span>Marketplace</h1>
                </div>
-            </a>
+            </ClientSideRoute>
             <div className="flex flex-col gap-[6px]" onClick={(e)=>toggleNavbarPhone(true)}>
                <div className="h-[6px] w-[30px] rounded-[2px] bg-primary"></div>
                <div className="h-[6px] w-[30px] rounded-[2px] bg-primary"></div>

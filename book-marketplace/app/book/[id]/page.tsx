@@ -68,8 +68,8 @@ export default async function Page({ params }: Props) {
 
 
    const imageUrl = !book.img_id?.startsWith("http") ? `/api/image/${book.img_id!}` : book.img_id;
-   let userImageUrl = !book.user.img_id?.startsWith("http") ? `/api/image/${book.user.img_id!}` : book.user.img_id;
-   if (userImageUrl === "/api/image/") userImageUrl = "/user.jpg";
+   let userImageUrl = !book.user.img_id?.startsWith("http") ? `/api/image/${book.user.img_id!}` : book.user.img_id;   
+   if (userImageUrl === "/api/image/" || userImageUrl === "/api/image/null") userImageUrl = "/user.jpg";
    
    const data = (book.creation_date as Date)
    let stringaData = "";
@@ -119,7 +119,7 @@ export default async function Page({ params }: Props) {
             <h2 className="font-bold text-2xl text-accent">{book.price}€</h2>
             <span className="bg-white bg-opacity-30 border-2 rounded-md px-2 py-1 border-primary text-primary font-semibold">
                <Tooltip testo={book.confirmed ? "Verificato" : "Non verificato"} dimensioni="sm" larghezzaInPx={300}>
-                  L&apos;annuncio è verificato quando il libro esiste realmente guardando il codice ISBN e il titolo
+                  L&apos;annuncio viene verificato dopo qualche giorno dalla pubblicazione
                </Tooltip>
             </span>
          </div>
@@ -134,13 +134,17 @@ export default async function Page({ params }: Props) {
             </div>
             {
                thisBookIsOfTheUser ? (
-                  <Link href={`/book/${book.id}/edit`} className="bg-primary text-white px-2 py-1 rounded-md text-base shadow-md">Modifica annuncio</Link>
+                  <Link href={`/`} /*book/${book.id}/edit */ className="bg-primary text-white px-2 py-1 rounded-md text-base shadow-md opacity-50">Modifica annuncio</Link>
                ) : (
-                  <button className="bg-primary text-white px-2 py-1 rounded-md text-base shadow-md">Contatta il venditore</button>
+                  <button disabled className="bg-primary text-white px-2 py-1 rounded-md text-base shadow-md disabled:opacity-50">Contatta il venditore</button>
                )
             }
          </div>
-         <p className="font-light text-slate-500 text-sm py-2">{`Questo annuncio l'ha${book._count.visual_book!=1?"nno":""} visto anche ${book._count.visual_book!=1?"altre":""} ${book._count.visual_book} person${book._count.visual_book==1?"a":"e"}`}</p>
+         {
+            book._count.visual_book > 0 ? (
+               <p className="font-light text-slate-500 text-sm py-2">{`Questo annuncio l'ha${book._count.visual_book!=1?"nno":""} visto anche ${book._count.visual_book!=1?"altre":""} ${book._count.visual_book} person${book._count.visual_book==1?"a":"e"}`}</p>
+            ) : (<></>)
+         }
          <div className="w-full border-t-[1px] border-accent border-opacity-50"></div>
          {
             (book.description != null && (book.description as string).trim() != "") ? (
